@@ -7,9 +7,8 @@ import numpy as np
 import re
 from torch import nn
 
-# -----------------------
-# 1️⃣ Load Artifacts
-# -----------------------
+
+
 with open("stoi.pkl", "rb") as f:
     stoi = pickle.load(f)
 
@@ -24,9 +23,7 @@ embedding_tensor = torch.tensor(embedding_matrix)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# -----------------------
-# 2️⃣ Define Model
-# -----------------------
+
 class BiderctionalLstm(nn.Module):
     def __init__(self, vocab_size, emb_dim=100, dropout=0.2, num_classes=6):
         super().__init__()
@@ -66,15 +63,13 @@ class BiderctionalLstm(nn.Module):
         out = self.network(hidden_cat)
         return out
 
-# Initialize and load model
+
 VOCAB_SIZE = len(itos)
 model = BiderctionalLstm(VOCAB_SIZE).to(DEVICE)
 model.load_state_dict(torch.load("model.pth", map_location=DEVICE))
 model.eval()
 
-# -----------------------
-# 3️⃣ Preprocessing Functions
-# -----------------------
+
 PAD, UNK = "<pad>", "<unk>"
 MAX_LEN = 178
 
@@ -92,9 +87,7 @@ def encode(toks, max_len=MAX_LEN):
         idxs += [stoi[PAD]] * (max_len - len(idxs))
     return idxs
 
-# -----------------------
-# 4️⃣ Prediction Function
-# -----------------------
+
 def predict_emotion(text):
     text = remove_punc(text)
     tokens = lemmatize_text_nltk(text)
@@ -106,9 +99,7 @@ def predict_emotion(text):
     
     return label_classes[pred_idx]
 
-# -----------------------
-# 5️⃣ Streamlit App UI
-# -----------------------
+
 st.title("Emotion Classifier")
 st.write("Enter a sentence and get the predicted emotion.")
 
